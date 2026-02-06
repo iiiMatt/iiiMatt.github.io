@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Password Check</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+    }
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #fff;
+    }
+    #container {
+      text-align: center;
+    }
+    #form {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+    input {
+      padding: 14px 16px;
+      font-size: 18px;
+      width: 300px;
+      text-align: center;
+    }
+    button {
+      padding: 14px 18px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+    #out {
+      font-size: 140px;
+      font-weight: 800;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <div id="form">
+      <input
+        id="pw"
+        type="password"
+        autocomplete="current-password"
+        placeholder="Enter password"
+      />
+      <button id="btn">Submit</button>
+    </div>
+    <div id="out"></div>
+  </div>
+
+  <script>
+    // SHA-256("yoursecretpassword")
+    const EXPECTED_HASH_HEX =
+      "1ee059d3a8704d9e60952d09bfa8c85bbabe986ca3c439b137fafb004bf4844a";
+
+    function toHex(buffer) {
+      const bytes = new Uint8Array(buffer);
+      let hex = "";
+      for (let i = 0; i < bytes.length; i++) {
+        hex += bytes[i].toString(16).padStart(2, "0");
+      }
+      return hex;
+    }
+
+    async function sha256Hex(text) {
+      const data = new TextEncoder().encode(text);
+      const digest = await crypto.subtle.digest("SHA-256", data);
+      return toHex(digest);
+    }
+
+    async function submit() {
+      const pw = document.getElementById("pw").value;
+      const hash = await sha256Hex(pw);
+      const ok = hash === EXPECTED_HASH_HEX;
+
+      document.getElementById("form").style.display = "none";
+      const out = document.getElementById("out");
+      out.textContent = ok ? "10" : "0";
+      out.style.display = "block";
+    }
+
+    document.getElementById("btn").addEventListener("click", submit);
+    document.getElementById("pw").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") submit();
+    });
+  </script>
+</body>
+</html>
