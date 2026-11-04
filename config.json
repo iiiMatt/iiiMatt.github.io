@@ -1,0 +1,12 @@
+{
+  "title": "Quiz Friendz",
+  "quizDate": "2026-11-16",
+  "newCardsPerDay": 20,
+  "people": {
+    "Máté": ["eu-politics", "history"],
+    "Ilayda": ["eelisa-fau", "geography"],
+    "Howen": ["science"],
+    "Marwan": ["pop-culture-sports"]
+  },
+  "everyone": ["tiebreaker"]
+}

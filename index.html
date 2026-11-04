@@ -1,96 +1,89 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Password Check</title>
-  <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Quiz Friendz Flashcards</title>
+<style>
+  :root {
+    --bg: #f6f5f1; --surface: #ffffff; --text: #1d1d1f; --muted: #6b6b70;
+    --border: #e2e0da; --accent: #2f5bd3; --accent-text: #ffffff;
+    --again: #c43b3b; --hard: #b7791f; --good: #2f8f4e; --easy: #2f5bd3;
+    --chip: #eceae4;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141416; --surface: #1e1e21; --text: #ececee; --muted: #9a9aa2;
+      --border: #313136; --accent: #6f93ff; --accent-text: #0d0d10;
+      --again: #e06464; --hard: #d9a441; --good: #4fbf74; --easy: #6f93ff;
+      --chip: #2a2a2e;
     }
-    body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #fff;
-    }
-    #container {
-      text-align: center;
-    }
-    #form {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-    }
-    input {
-      padding: 14px 16px;
-      font-size: 18px;
-      width: 300px;
-      text-align: center;
-    }
-    button {
-      padding: 14px 18px;
-      font-size: 18px;
-      cursor: pointer;
-    }
-    #out {
-      font-size: 140px;
-      font-weight: 800;
-      display: none;
-    }
-  </style>
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  main { max-width: 640px; margin: 0 auto; padding: 24px 16px 48px; }
+  h1 { font-size: 1.5rem; margin: 0 0 4px; }
+  h2 { font-size: 1.1rem; margin: 24px 0 8px; }
+  p { margin: 0 0 12px; }
+  .muted { color: var(--muted); font-size: .9rem; }
+  .panel {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 18px; margin: 16px 0;
+  }
+  button, .btn {
+    font: inherit; border: 1px solid var(--border); background: var(--surface);
+    color: var(--text); border-radius: 10px; padding: 10px 14px; cursor: pointer;
+  }
+  button.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); font-weight: 600; }
+  button:disabled { opacity: .5; cursor: default; }
+  button.link { border: 0; background: none; color: var(--accent); padding: 4px 0; }
+  input[type=password], textarea {
+    font: inherit; width: 100%; padding: 10px 12px; border-radius: 10px;
+    border: 1px solid var(--border); background: var(--bg); color: var(--text);
+  }
+  textarea { min-height: 110px; font-family: ui-monospace, monospace; font-size: .8rem; word-break: break-all; }
+  .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .grow { flex: 1; }
+  .people { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .people button { padding: 18px; font-size: 1.1rem; font-weight: 600; }
+  .cat { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--border); }
+  .cat:first-child { border-top: 0; }
+  .cat input { width: 20px; height: 20px; accent-color: var(--accent); }
+  .cat label { flex: 1; cursor: pointer; }
+  .tag { font-size: .75rem; background: var(--chip); border-radius: 999px; padding: 2px 8px; white-space: nowrap; }
+  .tag.mine { background: var(--accent); color: var(--accent-text); }
+  .stats { font-size: .8rem; color: var(--muted); }
+  .bar { height: 6px; background: var(--chip); border-radius: 3px; overflow: hidden; margin: 8px 0 16px; }
+  .bar div { height: 100%; background: var(--accent); width: 0; transition: width .2s; }
+  .card { min-height: 260px; display: flex; flex-direction: column; }
+  .card .q { font-size: 1.2rem; font-weight: 600; margin: 8px 0 12px; }
+  .card ol { margin: 0 0 12px; padding-left: 0; list-style: none; }
+  .card ol li { padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; margin-bottom: 6px; }
+  .card ol li::before { content: attr(data-l) "  "; font-weight: 600; color: var(--muted); }
+  .answer { border-top: 1px dashed var(--border); padding-top: 12px; margin-top: auto; }
+  .answer .a { font-size: 1.1rem; font-weight: 600; color: var(--good); }
+  .answer .note { color: var(--muted); font-size: .9rem; margin-top: 6px; }
+  .grades { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 14px; }
+  .grades button { padding: 10px 4px; font-weight: 600; display: flex; flex-direction: column; align-items: center; }
+  .grades button small { font-weight: 400; color: var(--muted); font-size: .75rem; }
+  .grades .g1 { border-color: var(--again); color: var(--again); }
+  .grades .g2 { border-color: var(--hard); color: var(--hard); }
+  .grades .g3 { border-color: var(--good); color: var(--good); }
+  .grades .g4 { border-color: var(--easy); color: var(--easy); }
+  .error { color: var(--again); }
+  .hidden { display: none !important; }
+  .top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  label.check { display: flex; gap: 8px; align-items: center; margin: 10px 0; font-size: .9rem; }
+</style>
 </head>
 <body>
-  <div id="container">
-    <div id="form">
-      <input
-        id="pw"
-        type="password"
-        autocomplete="current-password"
-        placeholder="Enter password"
-      />
-      <button id="btn">Submit</button>
-    </div>
-    <div id="out"></div>
-  </div>
-
-  <script>
-    // SHA-256("yoursecretpassword")
-    const EXPECTED_HASH_HEX =
-      "1ee059d3a8704d9e60952d09bfa8c85bbabe986ca3c439b137fafb004bf4844a";
-
-    function toHex(buffer) {
-      const bytes = new Uint8Array(buffer);
-      let hex = "";
-      for (let i = 0; i < bytes.length; i++) {
-        hex += bytes[i].toString(16).padStart(2, "0");
-      }
-      return hex;
-    }
-
-    async function sha256Hex(text) {
-      const data = new TextEncoder().encode(text);
-      const digest = await crypto.subtle.digest("SHA-256", data);
-      return toHex(digest);
-    }
-
-    async function submit() {
-      const pw = document.getElementById("pw").value;
-      const hash = await sha256Hex(pw);
-      const ok = hash === EXPECTED_HASH_HEX;
-
-      document.getElementById("form").style.display = "none";
-      const out = document.getElementById("out");
-      out.textContent = ok ? "10" : "0";
-      out.style.display = "block";
-    }
-
-    document.getElementById("btn").addEventListener("click", submit);
-    document.getElementById("pw").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") submit();
-    });
-  </script>
+<main id="app">
+  <noscript>This page needs JavaScript.</noscript>
+</main>
+<script src="app.js"></script>
 </body>
 </html>
